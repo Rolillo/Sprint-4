@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+    127.0.0.1:
+        image: postgres:13.2.2
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        
+    django_app:
+        build: .
+        volumes: 
+            - static:/code/static
+            - .:/code
+        depends_on:
+            - db_postgres
+
+    nginx:
+        image: nginx:1.13
+        ports:
+            - 8000:80
+        volumes:
+            - ./config/ngnix/conf.d:/etc/ngnix/conf.d
+            - static:/code/static
+        depends_on:
+            - django_app
+
+volumes:
+    .:
+    postgres_data:
+    static:
